@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lions Club of Chennai Marina Lighthouse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      /* --- Base Styling & Custom Font --- */
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8fafc;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Custom Scrollbar (Branded with club colors) --- */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1d4ed8; /* Lions Blue */
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #1e40af; /* Darker Lions Blue */
+      }
+
+      /* --- Cursor Spotlight Effect --- */
+      #cursor-light {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 800px;
+        height: 800px;
+        border-radius: 50%;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        background: radial-gradient(
+          circle,
+          rgba(29, 78, 216, 0.06),
+          transparent 60%
+        );
+        transition: opacity 0.4s ease-out, transform 0.2s ease-out;
+      }
+      body:not(:hover) #cursor-light {
+        opacity: 0;
+      }
+
+      /* --- Sticky Navigation Bar Styling --- */
+      .sticky-nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        transition: background-color 0.4s ease-in-out,
+          box-shadow 0.4s ease-in-out;
+      }
+
+      /* --- Scrolled State for Navigation (Glass Effect) --- */
+      .scrolled {
+        background-color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+
+      /* --- Nav Link Hover Effect --- */
+      .nav-link {
+        position: relative;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        transform: scaleX(0);
+        height: 2px;
+        bottom: -4px;
+        left: 0;
+        background-color: #fbbf24; /* Lions Gold */
+        transform-origin: bottom right;
+        transition: transform 0.25s ease-out;
+      }
+      .nav-link:hover::after {
+        transform: scaleX(1);
+        transform-origin: bottom left;
+      }
+
+      /* --- Animation for Elements Revealed on Scroll --- */
+      .hidden-for-reveal {
+        opacity: 0.3;
+        transform: translateY(30px);
+        will-change: transform, opacity;
+        transition: opacity 0.8s cubic-bezier(0.645, 0.045, 0.355, 1),
+          transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+      }
+      .reveal {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* --- 3D Tilt Effect for Cards --- */
+      .interactive-card-container {
+        perspective: 1500px;
+      }
+      .interactive-card {
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transform-style: preserve-3d;
+        will-change: transform;
+      }
+      #gallery .group {
+        cursor: pointer;
+      }
+
+      /* --- Hero Slider with Ken Burns Effect --- */
+      .hero-slider .slide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+        transform: scale(1.1); /* Start slightly zoomed in */
+      }
+      .hero-slider .slide.active {
+        opacity: 1;
+        animation: kenBurns 15s infinite;
+      }
+      @keyframes kenBurns {
+        0% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* --- Slider Navigation Controls --- */
+      .slider-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 30;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 1rem;
+      }
+      .slider-nav button {
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease,
+          opacity 0.3s ease;
+        opacity: 0;
+      }
+      #home:hover .slider-nav button {
+        opacity: 1;
+      }
+      .slider-nav button:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+        transform: scale(1.1);
+      }
+
+      /* --- Service Card Glow Effect --- */
+      .service-card {
+        position: relative;
+        overflow: hidden;
+      }
+      .service-card:before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200%;
+        padding-bottom: 200%;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(29, 78, 216, 0.15) 0%,
+          rgba(29, 78, 216, 0) 70%
+        );
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.6s ease-out;
+        z-index: 0;
+      }
+      .service-card:hover:before {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      .service-card > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* --- Image Modal (Lightbox) CSS --- */
+      .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.9);
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .image-modal.active {
+        display: flex;
+        opacity: 1;
+      }
+      .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 85vh;
+        border-radius: 8px;
+        transform: scale(0.8);
+        transition: transform 0.3s ease;
+      }
+      .image-modal.active .modal-content {
+        transform: scale(1);
+      }
+      .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 35px;
+        color: #fff;
+        font-size: 40px;
+        font-weight: bold;
+        transition: color 0.3s;
+        cursor: pointer;
+        z-index: 1001;
+      }
+      .modal-close:hover,
+      .modal-close:focus {
+        color: #bbb;
+        text-decoration: none;
+      }
+      .modal-nav {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 16px;
+        color: white;
+        font-weight: bold;
+        font-size: 30px;
+        transition: 0.3s ease;
+        user-select: none;
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+      .modal-nav:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+      }
+      .next {
+        right: 0;
+        border-radius: 3px 0 0 3px;
+      }
+      .prev {
+        left: 0;
+        border-radius: 0 3px 3px 0;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <div id="cursor-light"></div>
+
+    <header id="header" class="sticky-nav">
+      <div class="container mx-auto px-4 lg:px-8">
+        <nav class="flex items-center justify-between h-20">
+          <a
+            href="#"
+            class="text-2xl lg:text-3xl font-bold text-blue-800 transition-transform duration-300 hover:scale-105"
+          >
+            Lions Club<span class="text-amber-500">.</span>
+          </a>
+
+          <div class="hidden lg:flex items-center space-x-8">
+            <a
+              href="#home"
+              class="nav-link text-gray-600 hover:text-blue-800 font-medium transition-colors duration-300"
+              >Home</a
+            >
+            <a
+              href="#causes"
+              class="nav-link text-gray-600 hover:text-blue-800 font-medium transition-colors duration-300"
+              >Our Causes</a
+            >
+            <a
+              href="#gallery"
+              class="nav-link text-gray-600 hover:text-blue-800 font-medium transition-colors duration-300"
+              >Gallery</a
+            >
+            <a
+              href="#about"
+              class="nav-link text-gray-600 hover:text-blue-800 font-medium transition-colors duration-300"
+              >About Us</a
+            >
+            <a
+              href="#contact"
+              class="text-gray-600 hover:text-blue-800 font-medium transition-colors duration-300"
+              >Contact</a
+            >
+            <a
+              href="#"
+              class="bg-amber-500 text-gray-900 px-6 py-3 rounded-full hover:bg-amber-400 transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >Donate</a
+            >
+          </div>
+
+          <div class="lg:hidden">
+            <button
+              id="mobile-menu-button"
+              class="text-gray-600 hover:text-blue-800"
+            >
+              <i data-lucide="menu" class="w-7 h-7"></i>
+            </button>
+          </div>
+        </nav>
+      </div>
+      <div
+        id="mobile-menu"
+        class="hidden lg:hidden bg-white border-t border-gray-200"
+      >
+        <a href="#home" class="block px-6 py-4 text-gray-600 hover:bg-gray-100 font-medium">Home</a>
+        <a href="#causes" class="block px-6 py-4 text-gray-600 hover:bg-gray-100 font-medium">Our Causes</a>
+        <a href="#gallery" class="block px-6 py-4 text-gray-600 hover:bg-gray-100 font-medium">Gallery</a>
+        <a href="#about" class="block px-6 py-4 text-gray-600 hover:bg-gray-100 font-medium">About Us</a>
+        <a href="#contact" class="block px-6 py-4 text-gray-600 hover:bg-gray-100 font-medium">Contact</a>
+        <a href="#" class="block px-6 py-4 text-white bg-amber-500 hover:bg-amber-400 font-bold">Donate</a>
+      </div>
+    </header>
+
+    <main>
+      <section
+        id="home"
+        class="h-[calc(100vh-80px)] text-white relative overflow-hidden hero-slider"
+      >
+        <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1593113598332-cd288d649433?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDh8fHZvbHVudGVlcnN8ZW58MHx8fHwxNzI2NTgyMzQ3fDA&ixlib=rb-4.0.3&q=80&w=1080')"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDF8fHZvbHVudGVlcnN8ZW58MHx8fHwxNzI2NTgyMzQ3fDA&ixlib=rb-4.0.3&q=80&w=1080')"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1618428809491-a613d14b4353?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDEzfHxjaGFyaXR5fGVufDB8fHx8MTcyNjU4MjM3NXww&ixlib=rb-4.0.3&q=80&w=1080')"></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1518398046578-821856d3b37a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDE3fHxjb21tdW5pdHl8ZW58MHx8fHwxNzI2NTgyNDEwfDA&ixlib=rb-4.0.3&q=80&w=1080')"></div>
+
+        <div class="absolute inset-0 bg-black/50 z-10"></div>
+
+        <div class="slider-nav">
+          <button id="prev-slide"><i data-lucide="chevron-left" class="w-8 h-8"></i></button>
+          <button id="next-slide"><i data-lucide="chevron-right" class="w-8 h-8"></i></button>
+        </div>
+
+        <div class="absolute inset-0 flex items-center justify-center z-20">
+          <div class="text-center px-4">
+            <h1
+              id="hero-title"
+              class="text-4xl md:text-8xl font-extrabold mb-4 leading-tight"
+              style="text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6)"
+            >
+              </h1>
+            <p
+              class="text-lg md:text-xl max-w-3xl mx-auto mb-10 text-gray-200 hidden-for-reveal"
+              style="transition-delay: 0.5s; text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);"
+            >
+              Dedicated to making a difference in Chennai through community service, humanitarian projects, and a commitment to kindness.
+            </p>
+            <a
+              href="#causes"
+              class="bg-blue-700 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 shadow-2xl hidden-for-reveal"
+              style="transition-delay: 0.7s"
+            >
+              Get Involved
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section id="causes" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-4 lg:px-8 text-center">
+          <h2 class="text-4xl font-bold text-blue-900 mb-4 hidden-for-reveal">
+            Our Core Causes
+          </h2>
+          <p
+            class="text-gray-600 mb-16 max-w-2xl mx-auto hidden-for-reveal"
+            style="transition-delay: 0.1s"
+          >
+            We focus on five key areas of service, aligning with the global mission of Lions Club International to address the pressing needs of our community.
+          </p>
+          <div class="flex flex-wrap items-stretch justify-center gap-10">
+            <div
+              class="interactive-card-container hidden-for-reveal w-full md:w-[45%] lg:w-[30%]"
+            >
+              <div
+                class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-400 transform hover:-translate-y-2 interactive-card h-full service-card group"
+              >
+                <div class="bg-blue-100 text-blue-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
+                  <i data-lucide="eye" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Vision Care</h3>
+                <p class="text-gray-600">
+                  We work to prevent avoidable blindness and improve quality of life for people who are blind and visually impaired.
+                </p>
+              </div>
+            </div>
+            <div
+              class="interactive-card-container hidden-for-reveal w-full md:w-[45%] lg:w-[30%]"
+              style="transition-delay: 0.1s"
+            >
+              <div
+                class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-400 transform hover:-translate-y-2 interactive-card h-full service-card group"
+              >
+                <div class="bg-amber-100 text-amber-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
+                  <i data-lucide="wheat" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Hunger Relief</h3>
+                <p class="text-gray-600">
+                  Our goal is to ensure all community members have access to nutritious food through food drives and meal distribution programs.
+                </p>
+              </div>
+            </div>
+            <div
+              class="interactive-card-container hidden-for-reveal w-full md:w-[45%] lg:w-[30%]"
+              style="transition-delay: 0.2s"
+            >
+              <div
+                class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-400 transform hover:-translate-y-2 interactive-card h-full service-card group"
+              >
+                <div class="bg-green-100 text-green-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
+                  <i data-lucide="sprout" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Environment</h3>
+                <p class="text-gray-600">
+                  We are committed to restoring our planet's health by protecting and revitalizing the environment through tree planting and clean-up drives.
+                </p>
+              </div>
+            </div>
+            <div
+              class="interactive-card-container hidden-for-reveal w-full md:w-[45%] lg:w-[30%]"
+              style="transition-delay: 0.3s"
+            >
+              <div
+                class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-400 transform hover:-translate-y-2 interactive-card h-full service-card group"
+              >
+                <div class="bg-purple-100 text-purple-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
+                  <i data-lucide="heart-handshake" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Childhood Cancer</h3>
+                <p class="text-gray-600">
+                  We support children and families affected by childhood cancer, providing comfort, care, and access to essential treatments.
+                </p>
+              </div>
+            </div>
+            <div
+              class="interactive-card-container hidden-for-reveal w-full md:w-[45%] lg:w-[30%]"
+              style="transition-delay: 0.4s"
+            >
+              <div
+                class="bg-white p-8 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-400 transform hover:-translate-y-2 interactive-card h-full service-card group"
+              >
+                <div class="bg-rose-100 text-rose-700 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6 transition-transform duration-300 group-hover:scale-110">
+                  <i data-lucide="users" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Community</h3>
+                <p class="text-gray-600">
+                  Strengthening our local community by supporting schools, youth programs, and local initiatives that bring people together.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="gallery" class="py-24 bg-white">
+        <div class="container mx-auto px-4 lg:px-8">
+          <h2
+            class="text-4xl font-bold text-blue-900 mb-16 text-center hidden-for-reveal"
+          >
+            Our Impact in Action
+          </h2>
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="group rounded-lg overflow-hidden shadow-xl hidden-for-reveal interactive-card-container">
+              <div class="relative interactive-card">
+                <img src="https://images.unsplash.com/photo-1599059813005-728276e0533a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDV8fGZvb2QlMjBkcml2ZXxlbnwwfHx8fDE3MjY1ODI0OTJ8MA&ixlib=rb-4.0.3&q=80&w=1080" alt="Community Food Drive" class="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute inset-0 flex items-end p-6">
+                  <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out">
+                    <h3 class="text-white text-2xl font-bold">Community Food Drive</h3>
+                    <p class="text-amber-400">Anna Nagar, Chennai</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="group rounded-lg overflow-hidden shadow-xl hidden-for-reveal interactive-card-container" style="transition-delay: 0.2s">
+              <div class="relative interactive-card">
+                <img src="https://images.unsplash.com/photo-1629532199321-bb5c83c31644?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDF8fGV5ZSUyMGNoZWNrdXB8ZW58MHx8fHwxNzI2NTgyNTEwfDA&ixlib=rb-4.0.3&q=80&w=1080" alt="Free Eye Check-up Camp" class="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute inset-0 flex items-end p-6">
+                  <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out">
+                    <h3 class="text-white text-2xl font-bold">Free Eye Check-up Camp</h3>
+                    <p class="text-amber-400">Besant Nagar, Chennai</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="group rounded-lg overflow-hidden shadow-xl hidden-for-reveal interactive-card-container" style="transition-delay: 0.4s">
+              <div class="relative interactive-card">
+                <img src="https://images.unsplash.com/photo-1622383783934-08c3558WERA-aW7s?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDF8fHRyZWUlMjBwbGFudGluZ3xlbnwwfHx8fDE3MjY1ODI1NDR8MA&ixlib=rb-4.0.3&q=80&w=1080" alt="Tree Plantation Drive" class="w-full h-80 object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-100 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div class="absolute inset-0 flex items-end p-6">
+                  <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-in-out">
+                    <h3 class="text-white text-2xl font-bold">Tree Plantation Drive</h3>
+                    <p class="text-amber-400">Marina Beach, Chennai</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="py-24 bg-gray-50">
+        <div class="container mx-auto px-4 lg:px-8">
+          <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div class="hidden-for-reveal interactive-card-container">
+              <img
+                src="https://images.unsplash.com/photo-1578354093831-6b6de535c345?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wzOTAwNXwwfDF8c2VhcmNofDEwfHx2b2x1bnRlZXJzJTIwZ3JvdXB8ZW58MHx8fHwxNzI2NTgyNTcyfDA&ixlib=rb-4.0.3&q=80&w=1080"
+                alt="Our Team of Volunteers"
+                class="rounded-lg shadow-2xl w-full h-auto object-cover interactive-card"
+              />
+            </div>
+            <div class="text-center md:text-left hidden-for-reveal" style="transition-delay: 0.2s">
+              <h2 class="text-4xl font-bold text-blue-900 mb-6">
+                About The Lions Club of Chennai Marina Lighthouse
+              </h2>
+              <p class="text-gray-600 mb-6 leading-relaxed">
+                As a proud chapter of Lions Club International, we are a group of dedicated volunteers committed to the motto "We Serve." Our club brings together passionate individuals to create positive change in Chennai. Through local projects and global initiatives, we strive to build a kinder, healthier, and more vibrant community for everyone.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer id="contact" class="bg-gray-800 text-gray-300">
+      <div class="container mx-auto px-4 lg:px-8 py-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+          <div>
+            <h3 class="text-2xl font-bold text-white mb-4">
+              Lions Club<span class="text-amber-500">.</span>
+            </h3>
+            <p class="mb-4">Chennai Marina Lighthouse. We Serve.</p>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 hover:text-white transition-transform hover:scale-125"><i data-lucide="facebook" class="w-6 h-6"></i></a>
+              <a href="#" class="text-gray-400 hover:text-white transition-transform hover:scale-125"><i data-lucide="instagram" class="w-6 h-6"></i></a>
+              <a href="#" class="text-gray-400 hover:text-white transition-transform hover:scale-125"><i data-lucide="twitter" class="w-6 h-6"></i></a>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold text-white mb-4">Quick Links</h4>
+            <ul>
+              <li class="mb-2"><a href="#about" class="hover:text-white hover:underline">About Us</a></li>
+              <li class="mb-2"><a href="#causes" class="hover:text-white hover:underline">Our Causes</a></li>
+              <li class="mb-2"><a href="#gallery" class="hover:text-white hover:underline">Gallery</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold text-white mb-4">Contact Us</h4>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <i data-lucide="map-pin" class="w-5 h-5 mr-3 mt-1 text-amber-400 flex-shrink-0"></i>
+                <span>123 Lighthouse Road, <br />Marina, Chennai, TN 600004</span>
+              </li>
+              <li class="flex items-center">
+                <i data-lucide="phone" class="w-5 h-5 mr-3 text-amber-400"></i>
+                <span>(91) 987-654-3210</span>
+              </li>
+              <li class="flex items-center">
+                <i data-lucide="mail" class="w-5 h-5 mr-3 text-amber-400"></i>
+                <span>contact@chennailions.org</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="border-t border-gray-700 mt-16 pt-8 text-center text-gray-500 text-sm">
+          <p>&copy; <span id="year"></span> Lions Club of Chennai Marina Lighthouse. All Rights Reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <div id="imageModal" class="image-modal" role="dialog" aria-modal="true">
+      <span class="modal-close" id="modalClose">&times;</span>
+      <span class="modal-nav prev" id="modalPrev">&#10094;</span>
+      <span class="modal-nav next" id="modalNext">&#10095;</span>
+      <img
+        class="modal-content"
+        id="modalImage"
+        src=""
+        alt="Full-size gallery image"
+      />
+    </div>
+
+    <script>
+      // Initialize Lucide icons
+      lucide.createIcons();
+
+      const header = document.getElementById("header");
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+
+      // --- Mobile Menu Toggle ---
+      mobileMenuButton.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+
+      // Close mobile menu when a link is clicked
+      document.querySelectorAll("#mobile-menu a").forEach((link) => {
+        link.addEventListener("click", () => {
+          mobileMenu.classList.add("hidden");
+        });
+      });
+
+      // --- Translucent Header on Scroll ---
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 50) {
+          header.classList.add("scrolled");
+        } else {
+          header.classList.remove("scrolled");
+        }
+      });
+
+      // --- Animate Elements on Scroll (One-way) ---
+      const scrollObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("reveal");
+              scrollObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.15, rootMargin: "0px 0px -50px 0px" }
+      );
+
+      const elementsToReveal = document.querySelectorAll(".hidden-for-reveal");
+      elementsToReveal.forEach((el) => scrollObserver.observe(el));
+
+      // --- Hero Title Word Animation ---
+      const heroTitle = document.getElementById("hero-title");
+      const titleText = "We Serve"; // *** NGO MOTTO ADDED HERE ***
+      heroTitle.innerHTML = titleText
+        .split(" ")
+        .map(
+          (word) =>
+            `<span class="inline-block overflow-hidden align-bottom" style="padding-bottom: 0.1em; margin-bottom: -0.1em;"><span class="inline-block transform translate-y-full">${word}</span></span>`
+        )
+        .join(" ");
+
+      setTimeout(() => {
+        const wordSpans = heroTitle.querySelectorAll("span>span");
+        wordSpans.forEach((span, index) => {
+          setTimeout(() => {
+            span.style.transition =
+              "transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1)";
+            span.style.transform = "translateY(0)";
+          }, index * 150);
+        });
+        document
+          .querySelectorAll("#home .hidden-for-reveal")
+          .forEach((el) => el.classList.add("reveal"));
+      }, 300);
+
+      // --- Cursor Spotlight Effect ---
+      const cursorLight = document.getElementById("cursor-light");
+      let frame;
+      document.body.addEventListener("mousemove", (e) => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          cursorLight.style.transform = `translate(${e.clientX - 400}px, ${
+            e.clientY - 400
+          }px)`;
+        });
+      });
+
+      // --- 3D Interactive Card Tilt Effect ---
+      const interactiveCards = document.querySelectorAll(".interactive-card");
+      interactiveCards.forEach((card) => {
+        const maxTilt = 8;
+        card.addEventListener("mousemove", (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const { width, height } = rect;
+          const middleX = width / 2;
+          const middleY = height / 2;
+          const tiltY = ((x - middleX) / middleX) * maxTilt;
+          const tiltX = ((middleY - y) / middleY) * maxTilt;
+          requestAnimationFrame(() => {
+            card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.05, 1.05, 1.05)`;
+          });
+        });
+        card.addEventListener("mouseleave", () => {
+          requestAnimationFrame(() => {
+            card.style.transform =
+              "rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
+          });
+        });
+      });
+
+      // --- Hero Slider Logic ---
+      const slides = document.querySelectorAll(".hero-slider .slide");
+      const nextBtnSlide = document.getElementById("next-slide");
+      const prevBtnSlide = document.getElementById("prev-slide");
+      let currentSlide = 0;
+      let slideInterval;
+
+      function showSlide(n) {
+        slides.forEach((slide, index) => {
+          slide.classList.remove("active");
+          if (index === n) {
+            slide.classList.add("active");
+          }
+        });
+        currentSlide = n;
+      }
+      function nextSlide() {
+        showSlide((currentSlide + 1) % slides.length);
+      }
+      function prevSlide() {
+        showSlide((currentSlide - 1 + slides.length) % slides.length);
+      }
+      function startSlideShow() {
+        slideInterval = setInterval(nextSlide, 5000); // Slower transition for NGO feel
+      }
+      function stopSlideShow() {
+        clearInterval(slideInterval);
+      }
+      nextBtnSlide.addEventListener("click", () => {
+        stopSlideShow();
+        nextSlide();
+        startSlideShow();
+      });
+      prevBtnSlide.addEventListener("click", () => {
+        stopSlideShow();
+        prevSlide();
+        startSlideShow();
+      });
+      startSlideShow();
+
+      // --- Image Modal (Lightbox) Logic ---
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("modalImage");
+      const closeBtn = document.getElementById("modalClose");
+      const prevBtn = document.getElementById("modalPrev");
+      const nextBtn = document.getElementById("modalNext");
+      const galleryCards = document.querySelectorAll("#gallery .group");
+      let currentIndex = 0;
+
+      function getImageUrl(card) {
+        const img = card.querySelector("img");
+        return img ? img.src : "";
+      }
+      function openModal(index) {
+        currentIndex = index;
+        const imageUrl = getImageUrl(galleryCards[currentIndex]);
+        if (imageUrl) {
+          modalImg.src = imageUrl;
+          modal.classList.add("active");
+        }
+      }
+      function closeModal() {
+        modal.classList.remove("active");
+      }
+      function showNextImage() {
+        currentIndex = (currentIndex + 1) % galleryCards.length;
+        modalImg.src = getImageUrl(galleryCards[currentIndex]);
+      }
+      function showPrevImage() {
+        currentIndex = (currentIndex - 1 + galleryCards.length) % galleryCards.length;
+        modalImg.src = getImageUrl(galleryCards[currentIndex]);
+      }
+      galleryCards.forEach((card, index) => {
+        card.addEventListener("click", () => openModal(index));
+      });
+      closeBtn.addEventListener("click", closeModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+      });
+      nextBtn.addEventListener("click", showNextImage);
+      prevBtn.addEventListener("click", showPrevImage);
+      document.addEventListener("keydown", (e) => {
+        if (modal.classList.contains("active")) {
+          if (e.key === "Escape") closeModal();
+          if (e.key === "ArrowRight") showNextImage();
+          if (e.key === "ArrowLeft") showPrevImage();
+        }
+      });
+
+      // Set current year in footer
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
